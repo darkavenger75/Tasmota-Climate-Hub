@@ -1,6 +1,6 @@
 Seeed Xiao ESP32-C6 based climate controller for Tasmota
 
-A flexible Tasmota hub with 4 sensor inputs and 5 relay outputs. Can replace your collection of timer switches and thermostats (e.g. fish tank, terrarium) to allow for more complex control and the ability to check/change settings via the web interface. This is a stand-alone device not requiring internet access or any external controller/hub.  
+A flexible Tasmota hub with 4 sensor inputs and 5 relay outputs. Can replace your collection of timer switches and thermostats (e.g. fish tank, terrarium) to allow for more complex control and the ability to check/change settings via the web interface. This is a stand-alone device not requiring internet access or any external controller/hub. Being based on Tasmota it can be integrated into e.g. Home Assistant. 
 - RJ9 inputs for Sonoff WTS01 or THS01 (or whatever you want to connect requiring 1 GPIO, GND, 3.3V).
 - Solid state relay main voltage outputs, max. 2A each.
 - Option to add Zigbee module Ebyte E18-MS1 to integrate some of your Zigbee devices (check https://zigbee.blakadder.com/zigbee2tasmota.html for compatibility).
