@@ -1,0 +1,16 @@
+Rule1
+ON Time#Initialized DO event checktime=%time% ENDON
+ON Clock#Timer DO event checktime=%time% ENDON
+ON event#checktime<%timer1%  DO var1 0 ENDON
+ON event#checktime>=%timer1% DO var1 1 ENDON
+ON event#checktime>=%timer2% DO var1 0 ENDON
+ON event#checktime<%timer3%  DO var2 0 ENDON
+ON event#checktime>=%timer3% DO var2 1 ENDON
+ON event#checktime>=%timer4% DO var2 0 ENDON
+ON event#checktime<%timer5%  DO backlog var3=mem3 ; var4=mem4 ENDON
+ON event#checktime>=%timer5% DO backlog var3=mem1 ; var4=mem2 ENDON
+ON event#checktime>=%timer6% DO backlog Var3=mem3 ; var4=mem4 ENDON
+ON event#checktime DO backlog Power1 %var1% ; Power2 %var2% ENDON 
+ON tele-DS18B20#Temperature<=%var3% DO Power3 1 ENDON
+ON tele-DS18B20#Temperature>%var4% DO Power3 0 ENDON
+ON System#Init DO DhtDelay 480,40 ENDON
