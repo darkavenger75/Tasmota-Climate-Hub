@@ -1,4 +1,4 @@
-ESP32-C6 based climate controller for Tasmota
+Seeed Xiao ESP32-C6 based climate controller for Tasmota
 
 A flexible Tasmota hub with 4 sensor inputs and 5 relay outputs. 
 - RJ9 inputs for Sonoff WTS01 or THS01 (or whatever you want to connect requiring 1 GPIO, GND, 3.3V).
