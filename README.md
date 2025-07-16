@@ -6,7 +6,7 @@ A flexible Tasmota hub with 4 sensor inputs and 5 relay outputs.
 - Option to add Zigbee module Ebyte E18-MS1 to integrate some of your Zigbee devices (check https://zigbee.blakadder.com/zigbee2tasmota.html for compatibility).
 
 Instructions
-- Eagle schematic, board, Gerber, BOM and CPL files are provided. Someone like JLCPCB can make the PCB and assemble it for you. You might have to preorder the RJ9 sockets and solid state relays (Omron or Panasonic) or add them later yourself. 
+- Eagle schematic, board, Gerber, BOM and CPL files are provided. Someone like JLCPCB can make the PCB and assemble it for you (check placement of components!). You might have to preorder the RJ9 sockets and solid state relays (Omron or Panasonic) or add them later yourself. 
 - Flash with Tasmota for ESP32C6. If you want Zigbee support you must complie your own version, e.g. with Gitpod.
 - Set-up GPIO according to "Tasmota_ESP32C6_GPIO_Config.png" and your own configuration.
 - If attaching DS18x20 close the jumpers on the respective ports to add pullup resistors.
