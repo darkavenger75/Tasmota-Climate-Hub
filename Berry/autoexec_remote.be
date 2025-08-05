@@ -13,12 +13,16 @@ var NightMax
 
 var cl = webclient()
 
-def changeRelay(i, val)
-   print('Switch ',i, ' is ',val)
+def changeRelay(idx, val)
+   var sTable = {true:'on', false:'off'}
+   cl.begin(string.format("http://tasmota-terra/cm?cmnd=power%d%s%s",idx,'%20',sTable[val]))
+   cl.GET()
+   var s = cl.get_string()
 end
 
+
 def wakeButton()
-   print('Wake button pressed')
+   #print('Wake button pressed')
    tasmota.cmd('POWER4 ON')
 end
 
@@ -115,7 +119,7 @@ def updatePowerRemote()
 end
 
 tasmota.add_rule("hasp#p0b21#event=changed", def (val) changeRelay(1,global.p0b21.val) end)
-tasmota.add_rule("hasp#p0b22#event=changed", def (val) changeRelay(2,global.p0b22.val) end)
+#tasmota.add_rule("hasp#p0b22#event=changed", def (val) changeRelay(2,global.p0b22.val) end)
 tasmota.add_rule("hasp#p0b23#event=changed", def (val) changeRelay(3,global.p0b23.val) end)
 tasmota.add_rule("hasp#p0b24#event=changed", def (val) changeRelay(4,global.p0b24.val) end)
 tasmota.add_rule("hasp#p0b25#event=changed", def (val) changeRelay(5,global.p0b25.val) end)
@@ -124,7 +128,7 @@ tasmota.add_rule("hasp#p0b99#event=down", wakeButton)
 tasmota.add_rule("time#minute", updateTempRemote)
 tasmota.add_rule("time#minute", updatePowerRemote)
 tasmota.add_rule("time#minute", updateTempRangesRemote)
-tasmota.add_rule("time#minute|10", def (val) tasmota.cmd('POWER4 OFF') end) #switch display off
+tasmota.add_rule("time#minute|10", def (val) tasmota.cmd('POWER4 OFF') end)
 
 tasmota.add_rule("Time#Initialized", updateTempRemote)
 tasmota.add_rule("Time#Initialized", updatePowerRemote)
