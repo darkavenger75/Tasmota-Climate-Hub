@@ -1,0 +1,34 @@
+{"page":0,"comment":"---------- Upper stat line ----------"}
+{"id":0,"text_color":"#FFFFFF"}
+
+{"id":1,"obj":"label","x":0,"y":0,"w":480,"pad_right":0,"h":26,"bg_color":"#D00000","bg_opa":255,"radius":0,"border_side":0,"text":"Tasmota-Terra","text_font":"montserrat-28"}
+{"id":2,"obj":"lv_wifi_arcs","x":441,"y":0,"w":29,"h":26,"radius":0,"border_side":0,"bg_color":"#000000","line_color":"#FFFFFF"}
+{"id":3,"obj":"lv_clock","x":382,"y":3,"w":55,"h":16,"radius":0,"border_side":0}
+
+{"id":10,"obj":"label","x":0,"y":50,"w":240,"h":28,"text":"DS18B20 Temperature","text_font":"montserrat-28"}
+{"id":11,"obj":"label","x":370,"y":50,"w":100,"h":28,"text":"25.5°C","text_font":"montserrat-28"}
+{"id":12,"obj":"label","x":0,"y":80,"w":240,"h":28,"text":"SI7021 Temperature","text_font":"montserrat-28"}
+{"id":13,"obj":"label","x":370,"y":80,"w":100,"h":28,"text":"24.7°C","text_font":"montserrat-28"}
+{"id":14,"obj":"label","x":0,"y":110,"w":240,"h":28,"text":"SI7021 Humidity","text_font":"montserrat-28"}
+{"id":15,"obj":"label","x":370,"y":110,"w":100,"h":28,"text":"53%","text_font":"montserrat-28"}
+
+{"id":21,"obj":"switch","x":0,"y":160,"w":80,"h":40,"bg_color":"#000066","bg_color20":"#FFFFFF","bg_color11":"#0000ff","text":"LED","text_color":"#FFFFFF","text_color01":"#FFFFFF"}
+{"id":22,"obj":"switch","x":100,"y":160,"w":80,"h":40,"bg_color":"#000066","bg_color20":"#FFFFFF","bg_color11":"#0000ff","text":"HID","text_color":"#FFFFFF","text_color01":"#FFFFFF"}
+{"id":23,"obj":"switch","x":200,"y":160,"w":80,"h":40,"bg_color":"#000066","bg_color20":"#FFFFFF","bg_color11":"#0000ff","text":"HLamp","text_color":"#FFFFFF","text_color01":"#FFFFFF"}
+{"id":24,"obj":"switch","x":300,"y":160,"w":80,"h":40,"bg_color":"#000066","bg_color20":"#FFFFFF","bg_color11":"#0000ff","text":"HPad","text_color":"#FFFFFF","text_color01":"#FFFFFF"}
+{"id":25,"obj":"switch","x":400,"y":160,"w":80,"h":40,"bg_color":"#000066","bg_color20":"#FFFFFF","bg_color11":"#0000ff","text":"Fan","text_color":"#FFFFFF","text_color01":"#FFFFFF"}
+
+{"id":30,"obj":"scale","mode":2,"x":10,"y":230,"w":30,"h":160,"min":20,"max":30,"total_tick_count":11,"major_tick_every":5,"label_show":true,"line_color":"#FFFF88","line_color10":"#00FF00","line_color30":"#00FF00","line_width":2,"line_width10":2,"line_width30":2,"length10":10,"length30":5}
+{"id":31,"obj":"chart","x":50,"y":230,"w":390,"h":160,"bg_color":"#000000","border_color":"#ffffff","bg_opa":100,"border_width":1,"radius":0,"pad_all":2,"y_min":200,"y_max":300,"point_count":120,"height10":0,"width10":0,"v_div_line_count":13,"h_div_line_count":3,"line_color":"#808080","line_width30":2,"series1_color":"#FFFF88"}
+
+{"id":40,"obj":"label","x":0,"y":420,"w":80,"h":24,"text":"Day:","text_font":"montserrat-20"}
+{"id":41,"obj":"label","x":100,"y":420,"w":70,"h":24,"text":"25.1°C","text_font":"montserrat-20"}
+{"id":42,"obj":"label","x":160,"y":420,"w":30,"h":24,"text":" - ","text_font":"montserrat-20"}
+{"id":43,"obj":"label","x":180,"y":420,"w":70,"h":24,"text":"26.2°C","text_font":"montserrat-20"}
+
+{"id":44,"obj":"label","x":0,"y":450,"w":80,"h":24,"text":"Night:","text_font":"montserrat-20"}
+{"id":45,"obj":"label","x":100,"y":450,"w":70,"h":24,"text":"23.1°C","text_font":"montserrat-20"}
+{"id":46,"obj":"label","x":160,"y":450,"w":30,"h":24,"text":" - ","text_font":"montserrat-20"}
+{"id":47,"obj":"label","x":180,"y":450,"w":70,"h":24,"text":"24.2°C","text_font":"montserrat-20"}
+
+{"id":99,"obj":"btn","x":0,"y":380,"w":480,"h":100,"border_width":0,"border_opa":0,"enabled":true,"bg_opa":0,"bg_color":"#000000","border_color":"#000000"}
