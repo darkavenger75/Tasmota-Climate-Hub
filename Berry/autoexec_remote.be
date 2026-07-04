@@ -2,137 +2,94 @@ import haspmota
 import string
 import json
 
-var DS18B20_Temp
-var SI7021_Temp
-var SI7021_Hum
-
-var DayMin
-var DayMax
-var NightMin
-var NightMax
+# Configuration Constant (avoids duplicating credentials)
+var REMOTE_URL = "http://****/cm?user=****&password=****&cmnd="
 
 var cl = webclient()
 
-def changeRelay(idx, val)
-   var sTable = {true:'on', false:'off'}
-   cl.begin(string.format("http://tasmota-terra/cm?cmnd=power%d%s%s",idx,'%20',sTable[val]))
+# Helper function to send commands safely
+def sendRemoteCmd(cmnd_str)
+   cl.begin(REMOTE_URL .. cmnd_str)
    cl.GET()
-   var s = cl.get_string()
+   var res = cl.get_string()
+   return res != "" ? json.load(res) : nil
 end
 
+# Controls remote relays instantly when toggled on the touchscreen
+def changeRelay(idx, val)
+   var state_str = val ? "on" : "off"
+   # URL-encode the space character using %20
+   sendRemoteCmd(string.format("power%d%%20%s", idx, state_str))
+end
 
 def wakeButton()
-   #print('Wake button pressed')
    tasmota.cmd('POWER4 ON')
+   global.p0b21.enabled = true
+   global.p0b23.enabled = true
+   global.p0b24.enabled = true
+   global.p0b25.enabled = true
 end
 
-def getRemoteTemp()
-   cl.begin("http://tasmota-terra/cm?cmnd=status%2010")
-   cl.GET()
-   var s = cl.get_string()
-   s = json.load(s)
-   DS18B20_Temp  = s['StatusSNS']['DS18B20']['Temperature']
-   SI7021_Temp   = s['StatusSNS']['SI7021']['Temperature']
-   SI7021_Hum    = s['StatusSNS']['SI7021']['Humidity']
-end
+# ULTRA OPTIMIZATION: Fetches all remote stats in a single network trip
+def updateRemoteDashboard()
+   # This asks the remote device to construct a single JSON payload of everything we need
+   var remote_berry_code = "json.dump({" 
+      "\"sensors\":json.load(tasmota.read_sensors())," 
+      "\"p1\":tasmota.get_power(0),\"p2\":tasmota.get_power(1),\"p3\":tasmota.get_power(2),\"p4\":tasmota.get_power(3),\"p5\":tasmota.get_power(4)," 
+      "\"dMin\":persist.DayMin,\"dMax\":persist.DayMax,\"nMin\":persist.NightMin,\"nMax\":persist.NightMax" 
+   "})"
 
-def getRemoteTempRanges()
-   cl.begin("http://tasmota-terra/cm?cmnd=br%20persist.DayMin")
-   cl.GET()
-   var s = cl.get_string()
-   s = json.load(s)
-   DayMin  = s['Br']
-   cl.begin("http://tasmota-terra/cm?cmnd=br%20persist.DayMax")
-   cl.GET()
-   s = cl.get_string()
-   s = json.load(s)
-   DayMax  = s['Br']
-   cl.begin("http://tasmota-terra/cm?cmnd=br%20persist.NightMin")
-   cl.GET()
-   s = cl.get_string()
-   s = json.load(s)
-   NightMin  = s['Br']
-   cl.begin("http://tasmota-terra/cm?cmnd=br%20persist.NightMax")
-   cl.GET()
-   s = cl.get_string()
-   s = json.load(s)
-   NightMax  = s['Br']
-end
+   # URL-encode the code payload for the Tasmota 'br' command
+   var response = sendRemoteCmd("br%20" .. cl.url_encode(remote_berry_code))
+   
+   if !response || !response.find('Br') return end
+   var data = json.load(response['Br'])
+   if !data return end
 
-def updateTempRangesRemote()
-   getRemoteTempRanges()
-   global.p0b41.text = string.format('%0.1f',DayMin)+"°C"
-   global.p0b43.text = string.format('%0.1f',DayMax)+"°C"
-   global.p0b45.text = string.format('%0.1f',NightMin)+"°C"
-   global.p0b47.text = string.format('%0.1f',NightMax)+"°C"   
-end
-
-def getRemotePower(idx)
-   cl.begin(string.format("http://tasmota-terra/cm?cmnd=power%d",idx))
-   cl.GET()
-   var s = cl.get_string()
-   s = json.load(s)
-   s = s[string.format("POWER%d",idx)]
-   return s
-end
-
-def updateTempRemote()
-   getRemoteTemp()
-   global.p0b11.text = string.format('%0.1f',DS18B20_Temp)+"°C"
-   global.p0b13.text = string.format('%0.1f',SI7021_Temp)+"°C"
-   global.p0b15.text = string.format('%0.0f',SI7021_Hum)+"%" 
-   global.p0b31.val  = DS18B20_Temp*10
-end
-
-def updatePowerRemote()
-   var s
-   s=getRemotePower(1)
-   if s=='OFF'
-      global.p0b21.val = 'false'
-   elif s=='ON'
-      global.p0b21.val = 'true'
-   end   
-   s=getRemotePower(2)
-   if s=='OFF'
-      global.p0b22.val = 'false'
-   elif s=='ON'
-      global.p0b22.val = 'true'
+   # 1. Update Temperatures & Humidity
+   if data.find('sensors') && data['sensors'].find('DS18B20')
+      var dsTemp = data['sensors']['DS18B20']['Temperature']
+      global.p0b11.text = string.format('%0.1f', dsTemp) .. "°C"
+      global.p0b31.val  = int(dsTemp * 10)
    end
-   s=getRemotePower(3)
-   if s=='OFF'
-      global.p0b23.val = 'false'
-   elif s=='ON'
-      global.p0b23.val = 'true'
+   if data.find('sensors') && data['sensors'].find('SI7021-19')
+      global.p0b13.text = string.format('%0.1f', data['sensors']['SI7021-19']['Temperature']) .. "°C"
+      global.p0b15.text = string.format('%0.0f', data['sensors']['SI7021-19']['Humidity']) .. "%"
    end
-   s=getRemotePower(4)
-   if s=='OFF'
-      global.p0b24.val = 'false'
-   elif s=='ON'
-      global.p0b24.val = 'true'
-   end
-   s=getRemotePower(5)
-   if s=='OFF'
-      global.p0b25.val = 'false'
-   elif s=='ON'
-      global.p0b25.val = 'true'
-   end 
+
+   # 2. Update Relay Power Switches (Eliminates 5 individual HTTP requests)
+   global.p0b21.val = data['p1']
+   global.p0b22.val = data['p2']
+   global.p0b23.val = data['p3']
+   global.p0b24.val = data['p4']
+   global.p0b25.val = data['p5']
+
+   # 3. Update Target Ranges (Eliminates 4 individual HTTP requests)
+   global.p0b41.text = string.format('%0.1f', data['dMin']) .. "°C"
+   global.p0b43.text = string.format('%0.1f', data['dMax']) .. "°C"
+   global.p0b45.text = string.format('%0.1f', data['nMin']) .. "°C"
+   global.p0b47.text = string.format('%0.1f', data['nMax']) .. "°C"   
 end
 
-tasmota.add_rule("hasp#p0b21#event=changed", def (val) changeRelay(1,global.p0b21.val) end)
-#tasmota.add_rule("hasp#p0b22#event=changed", def (val) changeRelay(2,global.p0b22.val) end)
-tasmota.add_rule("hasp#p0b23#event=changed", def (val) changeRelay(3,global.p0b23.val) end)
-tasmota.add_rule("hasp#p0b24#event=changed", def (val) changeRelay(4,global.p0b24.val) end)
-tasmota.add_rule("hasp#p0b25#event=changed", def (val) changeRelay(5,global.p0b25.val) end)
+def displaySleep()
+   tasmota.cmd('POWER4 OFF')
+   global.p0b21.enabled = false
+   global.p0b22.enabled = false
+   global.p0b23.enabled = false
+   global.p0b24.enabled = false
+   global.p0b25.enabled = false
+end
+
+# Component Event Triggers
+tasmota.add_rule("hasp#p0b21#event=changed", def (val) changeRelay(1, global.p0b21.val) end)
+tasmota.add_rule("hasp#p0b23#event=changed", def (val) changeRelay(3, global.p0b23.val) end)
+tasmota.add_rule("hasp#p0b24#event=changed", def (val) changeRelay(4, global.p0b24.val) end)
+tasmota.add_rule("hasp#p0b25#event=changed", def (val) changeRelay(5, global.p0b25.val) end)
 tasmota.add_rule("hasp#p0b99#event=down", wakeButton)
 
-tasmota.add_rule("time#minute", updateTempRemote)
-tasmota.add_rule("time#minute", updatePowerRemote)
-tasmota.add_rule("time#minute", updateTempRangesRemote)
-tasmota.add_rule("time#minute|10", def (val) tasmota.cmd('POWER4 OFF') end)
-
-tasmota.add_rule("Time#Initialized", updateTempRemote)
-tasmota.add_rule("Time#Initialized", updatePowerRemote)
-tasmota.add_rule("Time#Initialized", updateTempRangesRemote)
+# Consolidated Cron Rules (Runs the single aggregated query smoothly)
+tasmota.add_rule("time#minute", updateRemoteDashboard)
+tasmota.add_rule("time#minute|10", displaySleep)
+tasmota.add_rule("Time#Initialized", updateRemoteDashboard)
 
 haspmota.start("remote_terra.jsonl")
-
